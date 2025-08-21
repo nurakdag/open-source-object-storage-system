@@ -1,35 +1,58 @@
-# Kamu Kurumları için Açık Kaynak Nesne Depolama Sistemi (AK-NDS)
+# Kamu Kurumları için Açık Kaynak Nesne Depolama Sistemi (MVP)
 
-Bu proje, kamu kurumlarının ve benzeri organizasyonların veri yönetimi ihtiyaçları için güvenli, ölçeklenebilir ve denetlenebilir bir açık kaynak nesne depolama sistemi MVP (Minimum Viable Product) sürümüdür.
+Bu proje, kamu kurumlarının ihtiyaçları düşünülerek geliştirilmiş, açık kaynak kodlu bir nesne depolama sisteminin minimum viable product (MVP) versiyonudur. Python/FastAPI ve React kullanılarak modern bir mikroservis mimarisiyle tasarlanmıştır.
 
 ## Hedef Mimari
 
-Sistem, mikroservis mimarisi üzerine kurulmuştur ve aşağıdaki bileşenlerden oluşur:
+- **Gateway**: Nginx tabanlı reverse proxy.
+- **Servisler**:
+  - `auth-service`: JWT tabanlı kimlik doğrulama ve rol yönetimi (ADMIN, USER).
+  - `storage-service`: MinIO üzerinden nesne işlemleri, bucket yönetimi ve pre-signed URL desteği.
+  - `audit-service`: RabbitMQ üzerinden gelen olayları dinleyerek PostgreSQL'e kaydeden denetim servisi.
+- **Altyapı**: Docker Compose ile yönetilen PostgreSQL, Redis, RabbitMQ ve MinIO.
+- **Frontend**: React (Vite + TypeScript) ile geliştirilmiş, modern ve kullanıcı dostu bir arayüz.
 
-- **Gateway (Nginx/Traefik):** Gelen istekleri ilgili servislere yönlendiren ters proxy.
-- **Auth Service (FastAPI):** JWT tabanlı kimlik doğrulama ve rol bazlı yetkilendirme (ADMIN, USER).
-- **Storage Service (FastAPI):** MinIO üzerinde nesne depolama işlemleri, `pre-signed` URL yönetimi ve mantıksal versiyonlama.
-- **Audit Service (FastAPI):** RabbitMQ üzerinden gelen olayları dinleyerek denetim kayıtlarını PostgreSQL veritabanına yazar.
-- **Web Admin (React/Vite):** Kullanıcıların sistemi yönetebileceği web arayüzü.
-- **Altyapı (Docker Compose):** PostgreSQL, Redis, RabbitMQ ve MinIO gibi temel altyapı servisleri.
+## Tek Komutla Çalıştırma
 
-## Hızlı Başlangıç
+Projeyi ayağa kaldırmak için Docker ve Docker Compose'un sisteminizde kurulu olması gerekmektedir.
 
-Projenin tüm bileşenlerini tek bir komutla ayağa kaldırmak için:
+1.  **Ortam Değişkenlerini Ayarlayın:**
+    `.env.example` dosyasını kopyalayarak `.env` adında yeni bir dosya oluşturun ve içindeki değişkenleri kendi ortamınıza göre düzenleyin.
 
-```bash
-# 1. Ortam değişkenlerini yapılandırın
-cp .env.example .env
+    ```bash
+    cp .env.example .env
+    ```
 
-# 2. Docker Compose ile sistemi başlatın
-docker compose -f deploy/docker-compose.yml up --build -d
-```
+2.  **Docker Compose ile Servisleri Başlatın:**
+    Aşağıdaki komut ile tüm servisleri ve altyapı bileşenlerini başlatabilirsiniz.
 
-## Paneller ve URL'ler
+    ```bash
+    docker compose -f deploy/docker-compose.yml up --build -d
+    ```
 
-- **API Gateway:** `http://localhost:8000`
-- **MinIO Console:** `http://localhost:9001` (Access Key: `minio`, Secret Key: `minio123`)
-- **RabbitMQ Management:** `http://localhost:15672` (Kullanıcı: `guest`, Şifre: `guest`)
-- **Web Admin:** `http://localhost:3000`
+## Erişilebilir Paneller ve URL'ler
 
-Daha fazla bilgi için `docs` klasöründeki belgelere ve her servisin kendi `README.md` dosyasına bakınız.
+- **Web Arayüzü**: [http://localhost](http://localhost)
+- **MinIO Console**: [http://localhost:9001](http://localhost:9001)
+  - **Kullanıcı Adı**: `minio`
+  - **Şifre**: `minio123`
+- **RabbitMQ Yönetim Paneli**: [http://localhost:15672](http://localhost:15672)
+  - **Kullanıcı Adı**: `guest`
+  - **Şifre**: `guest`
+- **API Dökümantasyonları (Swagger)**:
+  - **Auth Service**: [http://localhost/api/auth/docs](http://localhost/api/auth/docs)
+  - **Storage Service**: [http://localhost/api/storage/docs](http://localhost/api/storage/docs)
+  - **Audit Service**: [http://localhost/api/audit/docs](http://localhost/api/audit/docs)
+
+## Örnek Kullanıcı Bilgileri
+
+- **Admin Kullanıcısı**:
+  - **E-posta**: `admin@demo.gov.tr`
+  - **Şifre**: `Admin!234`
+- **Standart Kullanıcı**:
+  - **E-posta**: `user@demo.gov.tr`
+  - **Şifre**: `User!234`
+
+## Lisans
+
+Bu proje MIT Lisansı ile lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.

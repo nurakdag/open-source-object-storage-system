@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -13,6 +14,26 @@ app = FastAPI(
     title="Auth Service",
     description="Kamu AK-NDS için Kimlik Doğrulama Servisi",
     version="0.1.0",
+    root_path="/api/auth"
+)
+
+# CORS Middleware'ini ekle
+# Bu, farklı origin'lerden (örneğin localhost:8002'deki storage-service docs)
+# gelen isteklere izin verir.
+origins = [
+    "http://localhost",
+    "http://localhost:8001",
+    "http://localhost:8002",
+    "http://localhost:8003",
+    "http://localhost:3000", # React app için
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.on_event("startup")
@@ -43,7 +64,7 @@ def startup_event():
     finally:
         db.close()
 
-app.include_router(api_router, prefix="/api/auth", tags=["auth"])
+app.include_router(api_router)
 
 @app.get("/")
 def read_root():

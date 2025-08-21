@@ -1,3 +1,6 @@
+# Bu dosyada, FastAPI için kimlik doğrulama ve yetkilendirme ile ilgili bağımlılıklar tanımlanır.
+# JWT token doğrulama, aktif kullanıcı kontrolü ve rol bazlı erişim kontrolleri burada yapılır.
+
 from typing import List
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -6,9 +9,10 @@ from jose import JWTError
 from . import crud, models, schemas, security
 from .database import get_db
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")  # Token doğrulama için şema
 
 def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> models.User:
+    # JWT token ile mevcut kullanıcıyı getirir
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -31,11 +35,13 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     return user
 
 def get_current_active_user(current_user: models.User = Depends(get_current_user)) -> models.User:
+    # Kullanıcının aktif olup olmadığını kontrol eder
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 class RoleChecker:
+    # Rol bazlı erişim kontrolü için yardımcı sınıf
     def __init__(self, allowed_roles: List[models.RoleEnum]):
         self.allowed_roles = [role.value for role in allowed_roles]
 
@@ -48,4 +54,4 @@ class RoleChecker:
             )
         return current_user
 
-admin_role_required = RoleChecker([models.RoleEnum.ADMIN])
+admin_role_required = RoleChecker([models.RoleEnum.ADMIN])  # Sadece admin rolü olanlar erişebilir

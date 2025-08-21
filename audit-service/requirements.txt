@@ -5,3 +5,5 @@ sqlalchemy
 psycopg2-binary
 pika
 python-dotenv
+pydantic-settings
+python-jose[cryptography]

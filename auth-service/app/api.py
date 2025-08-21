@@ -1,3 +1,7 @@
+# Bu dosyada, kullanıcı kayıt, giriş, çıkış ve mevcut kullanıcı bilgisi için API uç noktaları tanımlanır.
+# Sadece adminler yeni kullanıcı ekleyebilir, girişte JWT token üretilir, çıkışta token geçersizleştirme mantığı yer alır.
+# Kullanıcı kendi bilgilerini sorgulayabilir.
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -49,7 +53,7 @@ def login_for_access_token(
     access_token = security.create_access_token(
         data={"sub": user.email, "roles": user_roles}
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 @router.post("/logout")
 def logout(
