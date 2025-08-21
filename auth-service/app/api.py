@@ -11,6 +11,7 @@ from . import crud, schemas, models, deps, security
 from .database import get_db
 from .config import settings
 
+# Router objesi -> Bu dosyadaki endpointler `router` üstünden gruplanacak
 router = APIRouter()
 
 @router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)

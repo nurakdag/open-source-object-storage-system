@@ -1,24 +1,21 @@
 import { FileText } from "lucide-react";
+import type { StorageObject } from "@/lib/types";
 
-const recentFiles = [
-  { name: "proje_sunumu.pdf", size: "2.1 MB", date: "2023-10-26" },
-  { name: "bütçe_2024.xlsx", size: "780 KB", date: "2023-10-25" },
-  { name: "toplanti_notlari.docx", size: "120 KB", date: "2023-10-24" },
-];
+type Props = { items?: StorageObject[] };
 
-export function RecentTable() {
+export function RecentTable({ items = [] }: Props) {
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="bg-white p-4 rounded-2xl shadow-soft">
       <h3 className="font-semibold mb-2">Son Dosyalar</h3>
       <table className="w-full text-sm">
         <tbody>
-          {recentFiles.map((file) => (
-            <tr key={file.name} className="border-b">
+          {items.map((file) => (
+            <tr key={file.key} className="border-b">
               <td className="p-2">
                 <FileText className="w-5 h-5 text-gray-500" />
               </td>
-              <td className="p-2 font-medium">{file.name}</td>
-              <td className="p-2 text-gray-500">{file.size}</td>
+              <td className="p-2 font-medium break-all">{file.key}</td>
+              <td className="p-2 text-gray-500">{(file.size/1024).toFixed(1)} KB</td>
             </tr>
           ))}
         </tbody>

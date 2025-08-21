@@ -13,15 +13,12 @@ function formatBytes(bytes: number, decimals = 2) {
 }
 
 export function PreviewPane() {
-  const { selectedObject, setSelectedObject } = useUIStore();
+  const { selectedObject, setSelectedObject, selectedBucket } = useUIStore();
 
   const downloadMutation = useMutation({
     mutationFn: async () => {
       if (!selectedObject) return;
-      const res = await api.getPresignDownloadUrl({
-        bucket: "default", // Bu dinamik olmalı
-        key: selectedObject.key,
-      });
+      const res = await api.getPresignDownloadUrl({ bucket: selectedBucket || "default", key: selectedObject.key });
       window.open(res.url, "_blank");
     },
   });

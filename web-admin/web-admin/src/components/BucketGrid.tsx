@@ -1,13 +1,12 @@
-import { api } from "../lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { Folder } from "lucide-react";
 import { Link } from "react-router-dom";
+import type { Bucket } from "@/lib/types";
 
-export function BucketGrid() {
-  const { data: buckets, isLoading, error } = useQuery({
-    queryKey: ["buckets"],
-    queryFn: api.getBuckets,
-  });
+type Props = { buckets?: Bucket[] };
+
+export function BucketGrid({ buckets }: Props) {
+  const isLoading = buckets === undefined;
+  const error = false;
 
   if (isLoading) {
     return (
@@ -29,7 +28,7 @@ export function BucketGrid() {
 
   if (!buckets || buckets.length === 0) {
     return (
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white p-4 rounded-2xl shadow-soft">
         <h3 className="font-semibold mb-2">Bucket'lar</h3>
         <div className="text-gray-500">Henüz bucket bulunmuyor</div>
       </div>
@@ -37,7 +36,7 @@ export function BucketGrid() {
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="bg-white p-4 rounded-2xl shadow-soft">
       <h3 className="font-semibold mb-2">Bucket'lar</h3>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {buckets.map((bucket) => (
